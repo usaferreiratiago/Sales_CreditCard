@@ -149,10 +149,6 @@ df.select('CreditCardID CardType CardNumber ExpMonth ExpYear'.split()).filter(co
 +------------+------------+--------------+--------+-------+
 only showing top 20 rows
 
-#df2 = df.withColumn("new_gender", when(df.gender == "M","Male")
- #                                .when(df.gender == "F","Female")
-  #                               .when(df.gender.isNull() ,"")
-   #                              .otherwise(df.gender))
 # Changing Numeber by Colum "ExpMonth" for the Name of Month and retrieving only CardType "Vista" and Sorting by CreditCardID
 
 df.withColumn("ExpMonth", when(df.ExpMonth == "1", "January")
