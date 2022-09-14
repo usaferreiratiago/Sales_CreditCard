@@ -6,27 +6,23 @@ import sys
 os.environ['PYSPARK_PYTHON'] = sys.executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 os.environ['PYSPARK_DRIVER_PYTHON_OPTS']= "notebook"
-
 # Import Libraries 
 
 from pyspark.sql import SparkSession
 from pyspark.sql import *
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
-
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import findspark
-
 spark = SparkSession \
 .builder \
 .appName("Project_01") \
 .config('spark.ui.showConsoleProgress', 'true') \
 .config("spark.master", "local[12]") \
 .getOrCreate()
-
 df = spark.read.csv('Documents/Bronze/Sales.CreditCard.csv',header=True, inferSchema=True)
 df.show(5)
 +------------+-------------+--------------+--------+-------+-------------------+
@@ -149,8 +145,11 @@ df.select('CreditCardID CardType CardNumber ExpMonth ExpYear'.split()).filter(co
 +------------+------------+--------------+--------+-------+
 only showing top 20 rows
 
+#df2 = df.withColumn("new_gender", when(df.gender == "M","Male")
+ #                                .when(df.gender == "F","Female")
+  #                               .when(df.gender.isNull() ,"")
+   #                              .otherwise(df.gender))
 # Changing Numeber by Colum "ExpMonth" for the Name of Month and retrieving only CardType "Vista" and Sorting by CreditCardID
-
 df.withColumn("ExpMonth", when(df.ExpMonth == "1", "January")
              .when(df.ExpMonth == "1", "January")
              .when(df.ExpMonth == "2", "February")
@@ -173,3 +172,94 @@ df.withColumn("ExpMonth", when(df.ExpMonth == "1", "January")
 |          16|   Vista|11111985451507|  August|   2006|
 +------------+--------+--------------+--------+-------+
 only showing top 3 rows
+
+df.createOrReplaceTempView("Sales.CreditCard")
+spark.catalog.listTables()
+[Table(name='creditcard', database='Sales', description=None, tableType='TEMPORARY', isTemporary=True)]
+spark.catalog.listDatabases()
+[Database(name='default', description='default database', locationUri='file:/C:/Users/data-pyspark/spark-warehouse')]
+df = spark.sql("""SELECT
+ CreditCardID,
+ CardType,
+ CardNumber,
+ ExpMonth,
+ ExpYear
+ 
+ FROM creditcard
+ 
+ WHERE CreditCardID like  '%1%'
+
+""").show(3)
++------------+------------+--------------+--------+-------+
+|CreditCardID|    CardType|    CardNumber|ExpMonth|ExpYear|
++------------+------------+--------------+--------+-------+
+|           1|SuperiorCard|33332664695310|      11|   2006|
+|          10|SuperiorCard|33332126386493|       8|   2008|
+|          11|SuperiorCard|33335352517363|      10|   2008|
++------------+------------+--------------+--------+-------+
+only showing top 3 rows
+
+df = spark.sql("""SELECT
+ CreditCardID,
+ CardType,
+ CardNumber,
+ ExpMonth,
+ ExpYear
+ 
+ FROM creditcard
+ 
+ WHERE CreditCardID like  '%1%' and ExpMonth = '4'
+
+""").show(3)
++------------+------------+--------------+--------+-------+
+|CreditCardID|    CardType|    CardNumber|ExpMonth|ExpYear|
++------------+------------+--------------+--------+-------+
+|          12|SuperiorCard|33334316194519|       4|   2008|
+|          61| Distinguish|55553521953614|       4|   2008|
+|         105| Distinguish|55558305945748|       4|   2008|
++------------+------------+--------------+--------+-------+
+only showing top 3 rows
+
+df = spark.sql("""SELECT
+ CreditCardID,
+ CardType,
+ CardNumber,
+ ExpMonth,
+ ExpYear
+ 
+ FROM creditcard
+ 
+ WHERE CreditCardID like '%1%' and ExpMonth = '2'
+
+""").show(3)
++------------+-------------+--------------+--------+-------+
+|CreditCardID|     CardType|    CardNumber|ExpMonth|ExpYear|
++------------+-------------+--------------+--------+-------+
+|         113|        Vista|11117863519103|       2|   2005|
+|         165|ColonialVoice|77772090003580|       2|   2007|
+|         187|        Vista|11115020407589|       2|   2007|
++------------+-------------+--------------+--------+-------+
+only showing top 3 rows
+
+df = spark.sql("""SELECT
+ CreditCardID,
+ CardType,
+ CardNumber,
+ ExpMonth,
+ ExpYear
+ 
+ FROM creditcard
+ 
+ WHERE ExpMonth like '%2%' and 
+ CardType in ("Vista","Distinguish")
+
+""").show(3)
++------------+-----------+--------------+--------+-------+
+|CreditCardID|   CardType|    CardNumber|ExpMonth|ExpYear|
++------------+-----------+--------------+--------+-------+
+|           9|Distinguish|55553465625901|       2|   2005|
+|          54|Distinguish|55553252134216|      12|   2006|
+|          58|      Vista|11117610506869|      12|   2008|
++------------+-----------+--------------+--------+-------+
+only showing top 3 rows
+
