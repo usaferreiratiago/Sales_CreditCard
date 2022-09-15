@@ -263,3 +263,112 @@ df = spark.sql("""SELECT
 +------------+-----------+--------------+--------+-------+
 only showing top 3 rows
 
+df = spark.sql("""SELECT distinct
+ CreditCardID,
+ CardType,
+ CardNumber,
+ ExpMonth,
+ ExpYear
+ 
+ FROM creditcard
+ 
+ WHERE ExpMonth like '%1%' and 
+ CardType in ("Vista","Distinguish","ColonialVoice") and 
+ ExpYear = "2005"
+ 
+
+""").show(3)
++------------+-----------+--------------+--------+-------+
+|CreditCardID|   CardType|    CardNumber|ExpMonth|ExpYear|
++------------+-----------+--------------+--------+-------+
+|         838|      Vista|11112072966443|      11|   2005|
+|        1712|Distinguish|55555294450605|      12|   2005|
+|        2541|Distinguish|55555171836955|      10|   2005|
++------------+-----------+--------------+--------+-------+
+only showing top 3 rows
+
+df = spark.sql("""SELECT distinct
+ CreditCardID,
+ CardType,
+ CardNumber,
+ --ExpMonth,
+ 
+ CASE WHEN ExpMonth = 1 THEN "January"
+            WHEN ExpMonth = 2 THEN "February"
+            WHEN ExpMonth = 3 THEN "March"
+            WHEN ExpMonth = 4 THEN "April"
+            WHEN ExpMonth = 5 THEN "May"
+            WHEN ExpMonth = 6 THEN "June"
+            WHEN ExpMonth = 7 THEN "July"
+            WHEN ExpMonth = 8 THEN "August"
+            WHEN ExpMonth = 9 THEN "September"
+            WHEN ExpMonth = 10 THEN "October"
+            WHEN ExpMonth = 11 THEN "November"
+            WHEN ExpMonth = 12 THEN "December"
+            ELSE '' END AS ExpMonth,
+ ExpYear
+ 
+ FROM creditcard
+ 
+ WHERE --ExpMonth like '%1%' and 
+ CardType in ("Vista","Distinguish","ColonialVoice") --and 
+ --ExpYear = "2005"
+ --Order by ExpMonth asc
+ Order by ExpYear asc
+ 
+""").show(50)
++------------+-------------+--------------+---------+-------+
+|CreditCardID|     CardType|    CardNumber| ExpMonth|ExpYear|
++------------+-------------+--------------+---------+-------+
+|       14020|  Distinguish|55552475527322|  October|   2005|
+|       10584|        Vista|11115277409906|  January|   2005|
+|       15773|  Distinguish|55553254355173|     July|   2005|
+|       12711|  Distinguish|55555847625128| November|   2005|
+|       16180|  Distinguish|55551934660898| December|   2005|
+|        1448|  Distinguish|55552641791214|  January|   2005|
+|       16605|        Vista|11112208536481|    March|   2005|
+|        1891|  Distinguish|55557422251046|   August|   2005|
+|       17310|        Vista|11112622842687|      May|   2005|
+|        3648|        Vista|11115603520031|     June|   2005|
+|       18021|ColonialVoice|77773296332654| February|   2005|
+|        4881|ColonialVoice|77771741451738| November|   2005|
+|       18726|  Distinguish|55555323305703|     July|   2005|
+|        5094|        Vista|11119689632759|  January|   2005|
+|       19191|        Vista|11118737765206|  January|   2005|
+|        6661|ColonialVoice|77772838744146| November|   2005|
+|        2866|ColonialVoice|77778769829144| February|   2005|
+|        7719|  Distinguish|55559423624012|  January|   2005|
+|        3565|ColonialVoice|77778492517106|  October|   2005|
+|        9690|  Distinguish|55553418861306|  January|   2005|
+|        5214|  Distinguish|55556181195570|    March|   2005|
+|       10451|        Vista|11113246138766|    March|   2005|
+|        5925|        Vista|11117569077579|    March|   2005|
+|         687|  Distinguish|55555073412599|     July|   2005|
+|        6256|ColonialVoice|77774806034407|September|   2005|
+|       13875|        Vista|11116667983089|    March|   2005|
+|        8208|  Distinguish|55555190162911|   August|   2005|
+|       15415|        Vista|11116283345747|     June|   2005|
+|        8231|  Distinguish|55552235386334|    March|   2005|
+|       16837|ColonialVoice|77777277597778|     June|   2005|
+|       10024|ColonialVoice|77776147702243|      May|   2005|
+|       17758|ColonialVoice|77779827585390|  October|   2005|
+|       10310|  Distinguish|55551019954238|    April|   2005|
+|       19081|ColonialVoice|77775759317859|     June|   2005|
+|       11040|        Vista|11118999547346| December|   2005|
+|        1389|        Vista|11114085487755|      May|   2005|
+|       13067|        Vista|11114788190010|     July|   2005|
+|        3809|ColonialVoice|77779855398734| November|   2005|
+|       16483|        Vista|11111452278422|September|   2005|
+|        4537|        Vista|11118031111452| November|   2005|
+|       17085|ColonialVoice|77771842357478|    April|   2005|
+|        8933|ColonialVoice|77778597022063| February|   2005|
+|       18063|        Vista|11118480983244| November|   2005|
+|        9787|        Vista|11117346694204|   August|   2005|
+|         686|        Vista|11112478616845| February|   2005|
+|        3915|  Distinguish|55559045269754|    April|   2005|
+|        8241|ColonialVoice|77779477374895|  January|   2005|
+|        4222|        Vista|11119221396064|    April|   2005|
+|         828|ColonialVoice|77774359839272|      May|   2005|
+|        8188|  Distinguish|55557881290787| February|   2005|
++------------+-------------+--------------+---------+-------+
+only showing top 50 rows
